@@ -50,8 +50,6 @@ public class addressExplode {
             String[] strs = s.split(",");
             fillProvinceCityAreaMap(province_city_area_map, strs);
         }
-        System.out.println("加载完成");
-        System.out.println(province_city_area_map);
     }
 
 
