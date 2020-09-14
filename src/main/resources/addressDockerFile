@@ -1,0 +1,16 @@
+FROM openjdk:8-jdk-alpine
+
+RUN mkdir -p /opt/sgq && \
+   #mkdir -p /opt/sgq/jar && \
+    mkdir -p /opt/sgq/work_dir
+
+
+ARG JAR_FILE=jar/address.jar
+COPY ${JAR_FILE} /opt/sgq/jar/app.jar
+
+
+WORKDIR /opt/sgq/work-dir
+
+
+ENTRYPOINT ["java","-jar","/opt/sgq/jar/app.jar"]
+
