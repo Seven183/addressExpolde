@@ -11,6 +11,5 @@ COPY ${JAR_FILE} /opt/sgq/jar/app.jar
 
 WORKDIR /opt/sgq/work-dir
 
-
 ENTRYPOINT ["java","-jar","/opt/sgq/jar/app.jar"]
 
