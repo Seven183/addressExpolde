@@ -8,8 +8,8 @@ public class replaceAddress {
                     .replaceAll("（", "")
                     .replaceAll("）", "")
                     .replaceAll("\\)", "")
-                    .replaceAll("\\(", "")
-                    .replace("伊犁州", "伊犁哈萨克自治州");
+                    .replaceAll("\\(", "");
+//                    .replace("伊犁州", "伊犁哈萨克自治州");
         }
         if (!(location_strs.startsWith("上海") || location_strs.startsWith("重庆") ||
                 location_strs.startsWith("天津") || location_strs.startsWith("北京"))

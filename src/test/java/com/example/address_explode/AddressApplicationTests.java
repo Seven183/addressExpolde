@@ -12,38 +12,19 @@ import java.util.Map;
 import java.util.Scanner;
 
 import static com.example.address_explode.util.fillProvinceCityAreaMap.*;
+import static com.example.address_explode.util.myMap.*;
 import static com.example.address_explode.util.replaceAddress.replaceAddress;
 
 @SpringBootTest
 class AddressApplicationTests {
-
-    private static final Map<String, String> myMap;
-
-    static {
-        myMap = new HashMap<String, String>();
-        myMap.put("南关区", "长春市");
-        myMap.put("南山区", "深圳市");
-        myMap.put("宝山区", "上海市");
-        myMap.put("市辖区", "东莞市");
-        myMap.put("普陀区", "上海市");
-        myMap.put("朝阳区", "北京市");
-        myMap.put("河东区", "天津市");
-        myMap.put("白云区", "广州市");
-        myMap.put("西湖区", "杭州市");
-        myMap.put("铁西区", "沈阳市");
-        myMap.put("兴宁区", "南宁市");
-        myMap.put("海城区", "北海市");
-        myMap.put("东港区", "日照市");
-    }
-
 
     HashMap<String, String> province_city_area_map = new HashMap<String, String>();
 
 
     @Test
     void contextLoads() {
-        System.out.println(getAddress("徐汇区桂林路"));
-//        System.out.println(getAddress("武汉市江岸区工农兵路99号昌盛小区7号楼3单元8层3号"));
+        System.out.println(getAddress("新疆乌鲁木齐市天山区京东卡角度看"));
+//        System.out.println(getAddress("湖北省武汉市江岸区工农兵路99号昌盛小区7号楼3单元8层3号"));
 //        System.out.println(getAddress("云南省昆明市滇池度假区广福路南悦城1栋1502号"));
 //        System.out.println(getAddress("北京市朝阳区新源南路1-3号平安国际金融中心B座15层"));
     }
@@ -62,22 +43,20 @@ class AddressApplicationTests {
         if (address.length() > 4) {
             location_strs = replaceAddress(address);
             if (location_strs.substring(0, 3).contains("省") || location_strs.startsWith("上海市") || location_strs.startsWith("重庆市") || location_strs.startsWith("天津市") || location_strs.startsWith("北京市")) {
-                return transform(location_strs, 8);
-            } else if (location_strs.startsWith("上海路")) {
-                return "//";
+                return transform(location_strs, 8, province_city_area_map);
             } else if (location_strs.startsWith("新疆") || location_strs.startsWith("内蒙") || location_strs.startsWith("西藏") || location_strs.startsWith("广西") || location_strs.startsWith("宁夏") || location_strs.startsWith("香港") || location_strs.startsWith("澳门")) {
-                return transform(location_strs, 7);
+                return transform(location_strs, 7, province_city_area_map);
             } else if (location_strs.substring(0, 3).contains("市") && (location_strs.substring(3, 6).contains("市") || location_strs.substring(3, 6).contains("区") || location_strs.substring(3, 6).contains("县"))) {
-                return transform(location_strs, 6);
+                return transform(location_strs, 6, province_city_area_map);
             } else {
-                return transform(location_strs, 3);
+                return transform(location_strs, 3, province_city_area_map);
             }
         } else {
             return "//";
         }
     }
 
-    public String transform(String location_strs, int lookahead) {
+    public String transform(String location_strs, int lookahead, HashMap province_city_area_map) {
 
         UeMap ueMap = repalceAddress(extractAddress(location_strs, lookahead));
 
@@ -132,7 +111,7 @@ class AddressApplicationTests {
                                 //这个是包含市 例如 XX省XX（市）XX县
                                 if (province_city_area_map.containsKey("" + "," + elem_city + "," + "")) {
                                     for (int z = 1; z < lookahead + 1; z++) {
-                                        if (addr1.substring(0, 7).contains("市")) {
+                                        if (addr1.substring(0, 8).contains("市")) {
                                             //判断完市，接着判断区
                                             String elem_area = addr1.substring(elem.length() + 1 + elem_city.length() + 1, z + elem.length() + 1 + elem_city.length() + 1);
                                             if (province_city_area_map.containsKey("" + "," + "" + "," + elem_area)) {
@@ -144,7 +123,7 @@ class AddressApplicationTests {
                                                 return ueMap;
                                             }
                                         } else {
-                                            String elem_area = addr1.substring(elem.length() + elem_city.length() + 1, z + elem.length() + elem_city.length() + 1);
+                                            String elem_area = addr1.substring(elem.length() + 1 + elem_city.length(), z + elem.length() + 1 + elem_city.length());
                                             if (province_city_area_map.containsKey("" + "," + "" + "," + elem_area)) {
                                                 ueMap.setLongitude(province_city_area_map.get("" + "," + "" + "," + elem_area).split(",")[4]);
                                                 ueMap.setLatitude(province_city_area_map.get("" + "," + "" + "," + elem_area).split(",")[3]);
@@ -177,7 +156,7 @@ class AddressApplicationTests {
                                 if (province_city_area_map.containsKey("" + "," + elem_city + "," + "")) {
                                     for (int z = 1; z < lookahead + 1; z++) {
                                         //这种情况是xxyy市看看又没有县级
-                                        if (addr1.substring(0, 6).contains("市")) {
+                                        if (addr1.substring(0, 7).contains("市")) {
                                             String elem_area = addr1.substring(elem.length() + elem_city.length() + 1, z + elem.length() + elem_city.length() + 1);
                                             if (province_city_area_map.containsKey("" + "," + "" + "," + elem_area)) {
                                                 ueMap.setLongitude(province_city_area_map.get("" + "," + "" + "," + elem_area).split(",")[4]);
@@ -189,7 +168,7 @@ class AddressApplicationTests {
                                             }
                                             //这种情况是xxyy看看又没有县级
                                         } else {
-                                            String elem_area = addr1.substring(elem.length() + elem_city.length() + 1, z + elem.length() + elem_city.length() + 1);
+                                            String elem_area = addr1.substring(elem.length() + elem_city.length(), z + elem.length() + elem_city.length());
                                             if (province_city_area_map.containsKey("" + "," + "" + "," + elem_area)) {
                                                 ueMap.setLongitude(province_city_area_map.get("" + "," + "" + "," + elem_area).split(",")[4]);
                                                 ueMap.setLatitude(province_city_area_map.get("" + "," + "" + "," + elem_area).split(",")[3]);
@@ -277,8 +256,8 @@ class AddressApplicationTests {
         if (StringUtils.isNotBlank(ueMap.getDistinct())) {
             if (ueMap.getDistinct().contains("区")) {
                 String key1 = ueMap.getDistinct();
-                if (myMap.containsKey(key1)) {
-                    String value = myMap.get(key1).replace("市", "");
+                if (myDistinctMap.containsKey(key1)) {
+                    String value = myDistinctMap.get(key1).replace("市", "");
                     if (province_city_area_map.containsKey("" + "," + value + "," + "")) {
                         ueMap.setDistinct(province_city_area_map.get("" + "," + "" + "," + key1).split(",")[2]);
                         ueMap.setCity(province_city_area_map.get("" + "," + value + "," + "").split(",")[1]);
@@ -288,14 +267,27 @@ class AddressApplicationTests {
                 }
             } else {
                 String key1 = ueMap.getDistinct() + "区";
-                if (myMap.containsKey(key1)) {
-                    String value = myMap.get(key1).replace("市", "");
+                if (myDistinctMap.containsKey(key1)) {
+                    String value = myDistinctMap.get(key1).replace("市", "");
                     if (province_city_area_map.containsKey("" + "," + value + "," + "")) {
                         ueMap.setDistinct(province_city_area_map.get("" + "," + "" + "," + key1).split(",")[2]);
                         ueMap.setCity(province_city_area_map.get("" + "," + value + "," + "").split(",")[1]);
                         ueMap.setProvince(province_city_area_map.get("" + "," + value + "," + "").split(",")[0]);
                         return ueMap;
                     }
+                }
+            }
+        }
+
+        if (StringUtils.isNotBlank(ueMap.getDistinct())) {
+            if (ueMap.getDistinct().contains("县")) {
+                String key1 = ueMap.getDistinct();
+                if (myMap.containsKey(key1)) {
+                    String value = myMap.get(key1);
+                    ueMap.setDistinct(province_city_area_map.get("" + "," + "" + "," + value).split(",")[2]);
+                    ueMap.setCity(province_city_area_map.get("" + "," + "" + "," + value).split(",")[1]);
+                    ueMap.setProvince(province_city_area_map.get("" + "," + "" + "," + value).split(",")[0]);
+                    return ueMap;
                 }
             }
         }

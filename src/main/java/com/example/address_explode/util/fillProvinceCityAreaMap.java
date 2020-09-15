@@ -69,7 +69,7 @@ public class fillProvinceCityAreaMap {
 
     public static String addCity(String text) {
         if (StringUtils.isNotBlank(text)) {
-            if ((text.length() > 4 && text.endsWith("州")) || (text.length() > 4 && text.endsWith("区"))) {
+            if ((text.length() > 4 && text.endsWith("州")) || (text.length() > 4 && text.endsWith("区")) || (text.length() >= 3 && text.contains("州"))) {
                 return text;
             } else {
                 return text + "市";
